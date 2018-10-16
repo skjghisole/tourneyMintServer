@@ -1,12 +1,10 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.4.18;
 import "./SafeMathLib.sol";
 
-contract Betting {
-    uint private Kwei = 1000;
-    uint private Szabo = 1000000000000;
+contract Tournament {
     bytes10[] private participantIds;
     uint private poolMoney = 0;
-    address private contractOwner = msg.sender;
+    address private contractOwner;
     uint private bettingWindow;
     uint private timeLock = 3 minutes;
     bytes10 private winnerId;
@@ -20,9 +18,9 @@ contract Betting {
     mapping(bytes10 => uint) internal totalBets;
     mapping(bytes10 => address[]) internal participantBettors;
 
-    constructor(bytes10[] _participants, string _tournamentName) public {
-        setParticipants(_participants);
+    constructor(address owner, string _tournamentName) public {
         tournamentName = _tournamentName;
+        contractOwner = owner;
     }
 
     modifier arrayNotEmpty(bytes10[] data) {
@@ -158,7 +156,7 @@ contract Betting {
     }
 
     function setParticipants(bytes10[] _participantIds)
-      internal
+      public
       arrayNotEmpty(_participantIds)
       onlyOwner
       onlyPendingTournament
@@ -168,7 +166,7 @@ contract Betting {
     }
 
     function getPoolMoney () public view returns (uint) {
-        return SafeMathLib.divide(poolMoney, Kwei);
+        return SafeMathLib.divide(poolMoney, 1000);
     }
 
     function bet(bytes10 _id)

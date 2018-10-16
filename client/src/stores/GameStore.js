@@ -2,7 +2,8 @@ import { observable, action, computed, toJS } from 'mobx';
 import Tournament from '../models/Tournament';
 import { StringToBytes, BytesToString } from '../utils';
 import TruffleContract from 'truffle-contract';
-import BettingContract from '../contracts/Betting.json';
+import TournamentContractFactory from '../contracts/TournamentContractFactory.json';
+import TournamentContract from '../contracts/Tournament.json';
 import ipfs from '../ipfs';
 
 class GameStore {
@@ -122,7 +123,7 @@ class GameStore {
        if(this.contract) {
            return;
        } else {
-           const Contract = await TruffleContract(BettingContract);
+           const Contract = await TruffleContract(TournamentContract);
            Contract.setProvider(web3.currentProvider);
            const contract = await Contract.at(id);
            this.contract = contract;
@@ -206,12 +207,12 @@ class GameStore {
       const data = dynamicData[mainField];
       const tournamentName = dynamicData[`${mainField}-tournamentName`];
       const teamNames = data.map(x => StringToBytes(x.teamName));
-      const privateKey = dynamicData[`${mainField}-privateKey`]
+      const privateKey = dynamicData[`${mainField}-privateKey`];
       const response = await this._client.service('/api/contracts').create({
         privateKey: `0x${privateKey}`,
         participants: teamNames,
         tournamentName
-      })
+      });
       console.log(response);
     }
 
