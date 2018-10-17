@@ -25,7 +25,7 @@
     "test": "npm run eslint && npm run mocha",
     "eslint": "eslint server/. test/. --config .eslintrc.json",
     "dev": "nodemon @babel/register server/",
-    "start": "node @babel/register server/",
+    "start": "node server/",
     "mocha": "mocha test/ --recursive --exit"
   },
   "dependencies": {
