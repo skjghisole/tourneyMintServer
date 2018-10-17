@@ -4,8 +4,6 @@ import "./Tournament.sol";
 contract TournamentContractFactory {
 	mapping(address => mapping(address => address)) tournamentContracts;
     address[] contractAddresses;
-    string savedString = 'hello';
-    address tournamentAddress;
 
     event CreatedTournamentContract(
         address tournamentContract
@@ -20,17 +18,5 @@ contract TournamentContractFactory {
 
     function getAllContracts() public view returns (address[]) {
         return contractAddresses;
-    }
-
-    function saveString(string someString) public {
-    	savedString = someString;
-    }
-
-    function getSavedString() public view returns(string) {
-    	return savedString;
-    }
-
-    function getMessageSender() public returns(address) {
-    	return msg.sender;
     }
 }

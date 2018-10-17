@@ -3,6 +3,7 @@ import Tournament from '../models/Tournament';
 import { StringToBytes, BytesToString } from '../utils';
 import TruffleContract from 'truffle-contract';
 import TournamentContract from '../contracts/Tournament.json';
+import TournamentFactory from '../contracts/TournamentContractFactory.json';
 import ipfs from '../ipfs';
 
 class GameStore {
@@ -21,6 +22,7 @@ class GameStore {
     @observable status;
     @observable timeLeft;
     @observable hasChampion = false;
+    @observable redirect = undefined;
 
 
    @action
@@ -100,7 +102,6 @@ class GameStore {
         this._rootStore.uiStore.closeDialog();
         this.gameSelected = {};
         this.tournament._listenGames();
-        this.listenChampion();
         
         const buffer = Buffer(JSON.stringify(this.tournament));
         ipfs.files.add(buffer, async (error, result) => {
@@ -118,21 +119,19 @@ class GameStore {
 
     @action
     deployContract = async (id) => {
-       const { web3 } = this._rootStore.providerStore;
-       if(this.contract) {
-           return;
-       } else {
-           const Contract = await TruffleContract(TournamentContract);
-           Contract.setProvider(web3.currentProvider);
-           const contract = Contract.at(id);
-           const tournamentName = await contract.getTournamentName();
-           console.log(tournamentName)
-           this.contract = contract;
-       }
-       //  const tournamentName = await this.getTournamentName();
-       //  const participants = await this.getParticipants();
-       // this.initTournament(participants.map(x=>BytesToString(x)), tournamentName)
-       return true;
+      const { web3 } = this._rootStore.providerStore;
+        if(this.contract) {
+          return;
+        } else {
+          const Contract = await TruffleContract(TournamentContract);
+          Contract.setProvider(web3.currentProvider);
+          const contract = Contract.at(id);
+          this.contract = contract;
+        }
+      const tournamentName = await this.getTournamentName();
+      const participants = await this.getParticipants();
+      this.initTournament(participants.map(x=>BytesToString(x)), tournamentName)
+      return true;
     }
 
     @action
@@ -165,8 +164,7 @@ class GameStore {
         if(!this.contract) {
             return;
         }
-        const participants = this.contract.getParticipants();
-        console.log(participants);
+        const participants = await this.contract.getParticipants();
         return participants;
     }
 
@@ -175,8 +173,7 @@ class GameStore {
         if(!this.contract) {
             return;
         } 
-        const tournamentName = this.contract.getTournamentName();
-        console.log(tournamentName)
+        const tournamentName = await this.contract.getTournamentName();
         return tournamentName;
     }
 
@@ -206,19 +203,18 @@ class GameStore {
 
     @action
     createGame = async (module, mainField) => {
-      const { web3 } = this._rootStore.providerStore;
+      const { web3, accounts } = this._rootStore.providerStore;
       const dynamicData = this._rootStore.formStore.processDynamicData(module);
       const data = dynamicData[mainField];
       const tournamentName = dynamicData[`${mainField}-tournamentName`];
       const teamNames = data.map(x => StringToBytes(x.teamName));
-      const privateKey = dynamicData[`${mainField}-privateKey`];
-      const response = await this._client.service('/api/contracts').create({
-        privateKey: `0x${privateKey}`,
-        participants: teamNames,
-        tournamentName,
-        owner: web3.currentProvider.publicConfigStore._state.selectedAddress
-      });
-      console.log(response);
+      const contractAddress = await this._client.service('/api/contracts').create({});
+      const Contract = await TruffleContract(TournamentFactory);
+      Contract.setProvider(web3.currentProvider);
+      const contract = Contract.at(contractAddress);
+      const tournamentContract = await contract.createTournament(tournamentName, teamNames, { from: accounts[0] });
+      const tournamentAddress = tournamentContract.logs[0].args.tournamentContract;
+      this.redirect = tournamentAddress;
     }
 
     @action
@@ -228,7 +224,8 @@ class GameStore {
         if(!this.contract) {
             return;
         } 
-        await this.contract.openBettingWindow({ from: accounts[0] });
+        const response = await this.contract.openBettingWindow({ from: accounts[0] });
+        console.log(response);
         this.getTimeLeft();
     }
 

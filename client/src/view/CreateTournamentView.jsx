@@ -1,8 +1,8 @@
 import React from 'react';
 import { observer, inject } from 'mobx-react';
+import { Redirect, withRouter } from 'react-router-dom';
 import { Delete, Add } from '@material-ui/icons';
 import { withStyles, Button, TextField, Grid, Paper } from '@material-ui/core';
-
 
 const styles = {
     elementContainer: {
@@ -19,7 +19,8 @@ const CreateTournamentView = ({ classes, formStore, gameStore }) => {
 		registerInput
 	} = formStore;
 	const {
-		createGame
+		createGame,
+		redirect
 	} = gameStore;
 	const module = "create";
 	const mainField = "createTourna";
@@ -69,23 +70,18 @@ const CreateTournamentView = ({ classes, formStore, gameStore }) => {
 									<Add /> Add Team
 								</Button>
 						</Grid>
-						<Grid item xs={12} md={6}>
-						  <TextField
-			          label="Private Key"
-			          fullWidth
-			          name={`${mainField}-privateKey`}
-			          onChange={formStore.handleInputChange(module)}
-							/>
-						</Grid>
 					</Grid>
 				</Paper>
 				<br/>
 				<Grid item sm={12} md={12}>
-					<Button fullWidth onClick={()=>createGame(module, mainField)}>Set Players</Button>
+					<Button fullWidth onClick={() => createGame(module, mainField)}>Set Players</Button>
 				</Grid>
+				{
+					redirect && <Redirect to={`/tournament/${redirect}`} />
+				}
 			</Grid>
 		</Grid>
 	)
 }
 
-export default withStyles(styles)(inject('formStore', 'gameStore')(observer(CreateTournamentView)));
+export default withRouter(withStyles(styles)(inject('formStore', 'gameStore')(observer(CreateTournamentView))));
