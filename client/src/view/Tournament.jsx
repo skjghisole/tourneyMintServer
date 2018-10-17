@@ -17,10 +17,11 @@ class Tournament extends Component {
 
   async componentDidMount() {
     const { gameStore } = this.props;
-    const { getTournamentStatus, listenGames } = gameStore;
+    const { getTournamentStatus, listenGames, listenChampion } = gameStore;
     setInterval(() => {
       listenGames()
       getTournamentStatus()
+      listenChampion()
     }, 2500);
   }
 

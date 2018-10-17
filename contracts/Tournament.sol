@@ -1,12 +1,10 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.4.18;
 import "./SafeMathLib.sol";
 
-contract Betting {
-    uint private Kwei = 1000;
-    uint private Szabo = 1000000000000;
+contract Tournament {
     bytes10[] private participantIds;
     uint private poolMoney = 0;
-    address private contractOwner = msg.sender;
+    address private contractOwner;
     uint private bettingWindow;
     uint private timeLock = 3 minutes;
     bytes10 private winnerId;
@@ -20,10 +18,41 @@ contract Betting {
     mapping(bytes10 => uint) internal totalBets;
     mapping(bytes10 => address[]) internal participantBettors;
 
-    constructor(bytes10[] _participants, string _tournamentName) public {
-        setParticipants(_participants);
+    constructor(address owner, string _tournamentName, bytes10[] participants) public {
         tournamentName = _tournamentName;
+        contractOwner = owner;
+        setParticipants(participants);
     }
+
+    event Bet (
+        bytes10 toBet,
+        uint amount
+    );
+
+    event SetWinner (
+        bytes10 winner
+    );
+
+    event ClaimWinnings (
+        address ownerAddress,
+        uint amount
+    );
+
+    event SetTournamentStatus (
+        string status
+    );
+
+    event StoreGameHash (
+        string hash
+    );
+
+    event TimeLockElapsed (
+        bool state
+    );
+
+    event DeductClaimablePoolMoney(
+        uint amount
+    );
 
     modifier arrayNotEmpty(bytes10[] data) {
         require(data.length > 0);
@@ -80,9 +109,14 @@ contract Betting {
         _;
     }
 
-    modifier onlyTournamentHasntEnded {
+    modifier onlyTournamentHasntEndedOrStarted {
         require(compareString(tournamentStatus, "ended") == false);
         require(compareString(tournamentStatus, "betting") == false);
+        _;
+    }
+
+    modifier onlyTournamentHasntEnded {
+        require(compareString(tournamentStatus, "ended") == false);
         _;
     }
 
@@ -138,14 +172,12 @@ contract Betting {
         onlyOwner
     {
         bettingWindow = now;
-        tournamentStatus = "betting";
+        setTournamentStatus('betting');
     }
 
-    function getTimeLeft() public view returns(uint256) {
+    function hasTimeLockElapsed() public {
         if(SafeMathLib.add(bettingWindow, timeLock) < now) {
-            return 0;
-        } else {
-            return SafeMathLib.subtract(SafeMathLib.add(bettingWindow, timeLock), now);
+            emit TimeLockElapsed(true);
         }
     }
     
@@ -160,7 +192,6 @@ contract Betting {
     function setParticipants(bytes10[] _participantIds)
       internal
       arrayNotEmpty(_participantIds)
-      onlyOwner
       onlyPendingTournament
       {
         require(_participantIds.length % 4 == 0 || _participantIds.length == 2);
@@ -168,7 +199,7 @@ contract Betting {
     }
 
     function getPoolMoney () public view returns (uint) {
-        return SafeMathLib.divide(poolMoney, Kwei);
+        return SafeMathLib.divide(poolMoney, 1000);
     }
 
     function bet(bytes10 _id)
@@ -180,11 +211,12 @@ contract Betting {
         onlyBettingStatus
         onlyInTimeline
         mustHaveParticipants
-    returns (uint) {
+    {
         bettorBetted[msg.sender][_id] = SafeMathLib.add(bettorBetted[msg.sender][_id], msg.value);
         poolMoney = SafeMathLib.add(poolMoney, msg.value);
         pushToParticipantBettors(_id);
-        return msg.value;
+        emit Bet(_id, msg.value);
+        // return msg.value;
     }
 
     function getParticipantBettors(bytes10 id) onlyValidParticipants(id) public view returns (address[]) {
@@ -199,8 +231,9 @@ contract Betting {
       mustHaveParticipants
       {
         winnerId = id;
-        tournamentStatus = "ended";
+        setTournamentStatus('ended');
         claimablePoolmoney = poolMoney;
+        emit SetWinner(id);
     }
 
     function getParticipants () public view returns(bytes10[]){
@@ -227,8 +260,10 @@ contract Betting {
       {
         uint amount = (poolMoney*bettorBetted[msg.sender][winnerId])/totalBetFor(winnerId);
         address(msg.sender).transfer(amount);
-        claimablePoolmoney = SafeMathLib.subtract(poolMoney, amount);
+        claimablePoolmoney = SafeMathLib.subtract(claimablePoolmoney, amount);
         claimed[msg.sender][winnerId];
+        emit DeductClaimablePoolMoney(claimablePoolmoney);
+        emit ClaimWinnings(msg.sender, amount);
     }
 
     function startTournament() public
@@ -237,7 +272,7 @@ contract Betting {
         onlyAfterTimelock
         onlyBettingStatus
     {
-        tournamentStatus = "ongoing";
+        setTournamentStatus('ongoing');
     }
 
     function getTournamentStatus() public view returns(string) {
@@ -254,9 +289,10 @@ contract Betting {
     function storeGameHash(string toStore)
       public
       onlyOwner
-      onlyTournamentHasntEnded
-      {
+      onlyTournamentHasntEndedOrStarted
+    {
         gameHash = toStore;
+        emit StoreGameHash(toStore);
     }
 
     function getTournamentName() public view returns(string) {
@@ -268,5 +304,13 @@ contract Betting {
       view
       returns(string) {
         return gameHash;
+    }
+
+    function setTournamentStatus(string _status)
+        internal
+        onlyTournamentHasntEnded
+    {
+        tournamentStatus = _status;
+        emit SetTournamentStatus(_status);
     }
 }

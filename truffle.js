@@ -1,5 +1,5 @@
 const HDWalletProvider = require('truffle-hdwallet-provider');
-const mnemonic = 'fan moment manage myth team maple jelly spin tube loyal rookie gather';
+const mnemonic = "submit issue truly unusual segment ready response half waste tiny kitten mystery";
 module.exports = {
   networks: {
     development: {
@@ -9,11 +9,12 @@ module.exports = {
     },
     ropsten: {
       provider: function() {
-        return new HDWalletProvider(mnemonic, 'https://ropsten.infura.io/v3/8fb4ef458a6c43a9864e4e072e55057f');
+        return new HDWalletProvider(mnemonic, 'https://ropsten.infura.io/v3/43973d2eba954fc9acc3ebfdd23e4488');
       },
       network_id: 3,
-      // from:"0x14c19910d27F85f069e152DB26D65796Cb65BEF8",
-      gas:'4700000'
+      // from:"0xdeff70036e79663f6d4abdf04034ed6035ec2d60",
+      gas:'6700000',
+      gasPrice: 200000000000
     }
   }
 };
