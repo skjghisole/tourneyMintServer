@@ -18,9 +18,10 @@ contract Tournament {
     mapping(bytes10 => uint) internal totalBets;
     mapping(bytes10 => address[]) internal participantBettors;
 
-    constructor(address owner, string _tournamentName) public {
+    constructor(address owner, string _tournamentName, bytes10[] participants) public {
         tournamentName = _tournamentName;
         contractOwner = owner;
+        setParticipants(participants);
     }
 
     modifier arrayNotEmpty(bytes10[] data) {
@@ -156,9 +157,8 @@ contract Tournament {
     }
 
     function setParticipants(bytes10[] _participantIds)
-      public
+      internal
       arrayNotEmpty(_participantIds)
-      onlyOwner
       onlyPendingTournament
       {
         require(_participantIds.length % 4 == 0 || _participantIds.length == 2);

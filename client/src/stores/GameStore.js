@@ -2,7 +2,6 @@ import { observable, action, computed, toJS } from 'mobx';
 import Tournament from '../models/Tournament';
 import { StringToBytes, BytesToString } from '../utils';
 import TruffleContract from 'truffle-contract';
-import TournamentContractFactory from '../contracts/TournamentContractFactory.json';
 import TournamentContract from '../contracts/Tournament.json';
 import ipfs from '../ipfs';
 
@@ -125,12 +124,14 @@ class GameStore {
        } else {
            const Contract = await TruffleContract(TournamentContract);
            Contract.setProvider(web3.currentProvider);
-           const contract = await Contract.at(id);
+           const contract = Contract.at(id);
+           const tournamentName = await contract.getTournamentName();
+           console.log(tournamentName)
            this.contract = contract;
        }
-        const participants = await this.getParticipants();
-        const tournamentName = await this.getTournamentName();
-       this.initTournament(participants.map(x=>BytesToString(x)), tournamentName)
+       //  const tournamentName = await this.getTournamentName();
+       //  const participants = await this.getParticipants();
+       // this.initTournament(participants.map(x=>BytesToString(x)), tournamentName)
        return true;
     }
 
@@ -164,7 +165,8 @@ class GameStore {
         if(!this.contract) {
             return;
         }
-        const participants = await this.contract.getParticipants();
+        const participants = this.contract.getParticipants();
+        console.log(participants);
         return participants;
     }
 
@@ -173,7 +175,8 @@ class GameStore {
         if(!this.contract) {
             return;
         } 
-        const tournamentName = await this.contract.getTournamentName();
+        const tournamentName = this.contract.getTournamentName();
+        console.log(tournamentName)
         return tournamentName;
     }
 
@@ -203,6 +206,7 @@ class GameStore {
 
     @action
     createGame = async (module, mainField) => {
+      const { web3 } = this._rootStore.providerStore;
       const dynamicData = this._rootStore.formStore.processDynamicData(module);
       const data = dynamicData[mainField];
       const tournamentName = dynamicData[`${mainField}-tournamentName`];
@@ -211,7 +215,8 @@ class GameStore {
       const response = await this._client.service('/api/contracts').create({
         privateKey: `0x${privateKey}`,
         participants: teamNames,
-        tournamentName
+        tournamentName,
+        owner: web3.currentProvider.publicConfigStore._state.selectedAddress
       });
       console.log(response);
     }

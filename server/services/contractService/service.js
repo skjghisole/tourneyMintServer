@@ -3,15 +3,19 @@ const TournamentFactory = require('../../../build/contracts/TournamentContractFa
 const SimpleContract = require('../../../build/contracts/Simple.json');
 const TruffleContract = require('truffle-contract');
 const Web3 = require('web3');
-// const ethers = require('ethers');
+const ethers = require('ethers');
 
-// const { contracts, providers } = ethers;
+const { contracts, providers } = ethers;
 //infura provider
-// const provider = new providers.InfuraProvider('ropsten', 'd39beccaf02943deb7f5081912abcb27');
+// const provider = new providers.InfuraProvider('ropsten', '43973d2eba954fc9acc3ebfdd23e4488');
 //localhost
 // let safeMathAddress;
-const provider = 'HTTP://127.0.0.1:7545';
-const web3 = new Web3(provider);
+// const provider = 'HTTP://127.0.0.1:7545';
+const provider = 'https://ropsten.infura.io/v3/43973d2eba954fc9acc3ebfdd23e4488'
+// const web3 = new Web3()
+const web3 = new Web3(new Web3.providers.HttpProvider(provider));
+// console.log(web3.currentProvider);
+// const web3 = new Web3(new Web3.providers.HttpProvider(provider));
 // const accounts = web3.eth.getAccounts();
 // web3.eth.getAccounts().then(x => console.log(x))
 
@@ -32,25 +36,18 @@ class Service {
   }
 
   async create(data) {
-    const accounts = await web3.eth.getAccounts();
+    const { tournamentName, participants, owner } = data;
     const Contract = await TruffleContract(TournamentFactory);
     Contract.setProvider(web3.currentProvider);
-    const fixedContract = fixTruffleContractCompatibilityIssue(Contract);
-    const { tournamentName } = data;
-    const contract = fixedContract.at("0x9fd9828a17ef3402540e9d53e25b7e785021dc6e");
-    console.log(contract);
-    const tournamentAddress = await contract.createTournament(tournamentName, { from: accounts[0] });
-    console.log(tournamentAddress)
-    const saved = await contract.getSavedString();
-    console.log(saved);
-    return saved;
-    // const savedString = await contract.getSavedString();
-    // await contract.setString('Hello', { from: accounts[0] });
-    // const messenger = await contract.loadString();
-    // console.log(messenger);
-    // console.log(savedString)
-    // console.log(tournamentAddress)
-    // return messenger;
+
+    const fixedContract = fixTruffleContractCompatibilityIssue(Contract); 
+    const deployed = await fixedContract.deployed();
+    const contract = fixedContract.at("0xc518e3c0888c90b595a92c40ff1ddce2eef0c97f");
+    const sender = await contract.getMessageSender({ from: owner });
+    console.log(sender);
+    // const tournamentAddress = await contract.createTournament(tournamentName, participants, { from: owner , gas: '4000000', gasPrice: '4000000' });
+    // console.log(tournamentAddress);
+    // return tournamentAddress;
   }
 
 }
