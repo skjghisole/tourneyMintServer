@@ -25,7 +25,7 @@
     "test": "npm run eslint && npm run mocha",
     "eslint": "eslint server/. test/. --config .eslintrc.json",
     "dev": "nodemon @babel/register server/",
-    "start": "truffle compile && nodemon @babel/register server/",
+    "start": "nodemon @babel/register server/",
     "mocha": "mocha test/ --recursive --exit"
   },
   "dependencies": {

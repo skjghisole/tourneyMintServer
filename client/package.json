@@ -119,5 +119,5 @@
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "run-script-os": "^1.0.3"
   },
-  "proxy": "http://localhost:3333"
+  "proxy": "https://tourney-mint.herokuapp.com/"
 }
