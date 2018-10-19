@@ -3,8 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@feathersjs/feathers": "^3.2.3",
-    "@feathersjs/socketio-client": "^1.1.4",
     "@material-ui/core": "^3.0.3",
     "@material-ui/icons": "^3.0.1",
     "autoprefixer": "7.1.6",
@@ -30,7 +28,7 @@
     "file-loader": "1.1.5",
     "fs-extra": "3.0.1",
     "html-webpack-plugin": "2.29.0",
-    "ipfs-api": "^24.0.2",
+    "ipfs-api": "^25.0.0",
     "jest": "20.0.4",
     "js-sha3": "^0.8.0",
     "lodash": "^4.17.11",
@@ -53,6 +51,7 @@
     "socket.io-client": "^2.1.1",
     "style-loader": "0.19.0",
     "sw-precache-webpack-plugin": "0.11.4",
+    "truffle-contract": "^3.0.6",
     "url-loader": "0.6.2",
     "web3": "^1.0.0-beta.36",
     "webpack": "3.8.1",
@@ -119,5 +118,5 @@
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "run-script-os": "^1.0.3"
   },
-  "proxy": "https://tourney-mint.herokuapp.com/"
+  "proxy": "https://tourney-mint-server.herokuapp.com/"
 }
