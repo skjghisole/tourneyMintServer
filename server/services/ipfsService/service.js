@@ -6,15 +6,17 @@ class Service {
   }
 
   async create(data) {
-    ipfs.files.add(data, async (error, result) => {
+    let hash;
+    return new Promise((resolve, reject) => {
+      ipfs.files.add(Buffer.from(data.toString()), async (error, result) => {
          if(error) {
              console.error(error)
-             return
+             reject(error);
          }
-         return result[0].hash;
+         resolve(result[0].hash);
      });
+    })
   }
-
 }
 
 module.exports = Service;

@@ -1,3 +1,4 @@
+const favicon = require('serve-favicon');
 const compress = require('compression');
 const helmet = require('helmet');
 const cors = require('cors');
@@ -24,9 +25,11 @@ app.use(cors());
 app.use(compress());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(join(process.cwd(), 'client/public')));
+app.use(favicon(path.join(app.get('public'), 'favicon.ico')));
+// app.use(express.static(join(process.cwd(), 'public')));
 
 // Host the public folder
+app.use('/', express.static(app.get('public')))
 
 // Set up Plugins and providers
 app.configure(express.rest());
@@ -43,8 +46,6 @@ app.configure(channels);
 // Configure a middleware for 404s and the error handler
 // app.use(express.notFound());
 // app.use(express.errorHandler({ logger }));
-
-// app.service('/api/contracts').create({ 'name': 'karl'});
 
 app.hooks(appHooks);
 
