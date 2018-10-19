@@ -1,4 +1,4 @@
-const Service = require('./Service');
+const Service = require('./service');
 
 module.exports = function () {
 	return function setup() {
