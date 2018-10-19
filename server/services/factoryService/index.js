@@ -3,17 +3,15 @@ const Service = require('./service');
 module.exports = function service() {
   return function setup() {
     const app = this;
-    const path = '/api/contracts';
+    const path = '/api/factory/address';
     app.use(path, new Service());
 
     const beforeHooks = {
       all: [],
-      get: [],
     };
 
     const afterHooks = {
       all: [],
-      get: [],
     };
 
     app.service(path).hooks({

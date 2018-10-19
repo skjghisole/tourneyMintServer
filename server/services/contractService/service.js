@@ -24,7 +24,14 @@ function fixTruffleContractCompatibilityIssue(contract) {
 
 class Service {
   async find(params) {
-    return [];
+    const Contract = await TruffleContract(TournamentFactory);
+    Contract.setProvider(web3.currentProvider);
+    const fixedContract = fixTruffleContractCompatibilityIssue(Contract)
+    await fixedContract.deployed();
+
+    const factoryContract = fixedContract.at(factoryAddress);
+    const tournamentAddresses = await factoryContract.getAllContracts();
+    return tournamentAddresses;
   }
 
   async create() {
