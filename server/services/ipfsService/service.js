@@ -7,8 +7,9 @@ class Service {
 
   async create(data) {
     let hash;
+    let stringifiedData = data instanceof Object ? JSON.stringify(data) : data.toString();
     return new Promise((resolve, reject) => {
-      ipfs.files.add(Buffer.from(data.toString()), async (error, result) => {
+      ipfs.files.add(Buffer.from(stringifiedData), async (error, result) => {
          if(error) {
              console.error(error)
              reject(error);

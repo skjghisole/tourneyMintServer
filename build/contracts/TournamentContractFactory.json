@@ -1606,12 +1606,12 @@
     "3": {
       "events": {},
       "links": {
-        "SafeMathLib": "0x5bf5fed06fcb52788cd8164c1a485fb7512476e5"
+        "SafeMathLib": "0xdcce4f097aa21828e14a5d3f90ec0a418a3d1cc7"
       },
-      "address": "0x3c71d3c2c9b54cfc00dbfa255f58f8a76ad39260",
-      "transactionHash": "0x1cae925cc3acbdd72bebcbc506ef54976a469f05bf636e1701a2e9b3f2a2c8a3"
+      "address": "0x831db67c805a8a93d253cd1f3ecdcb9527f27670",
+      "transactionHash": "0xbd33ab3ed5adaa064462012bf92231915328b4ee5a05f5c6c4f86df2b7686ee3"
     }
   },
   "schemaVersion": "2.0.1",
-  "updatedAt": "2018-10-20T11:46:13.584Z"
+  "updatedAt": "2018-10-20T12:25:17.355Z"
 }

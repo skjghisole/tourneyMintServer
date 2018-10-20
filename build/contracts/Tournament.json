@@ -21461,12 +21461,12 @@
     "3": {
       "events": {},
       "links": {
-        "SafeMathLib": "0x5bf5fed06fcb52788cd8164c1a485fb7512476e5"
+        "SafeMathLib": "0xdcce4f097aa21828e14a5d3f90ec0a418a3d1cc7"
       },
-      "address": "0x28efbb0a0c19fb717361b336054f7e145ec244eb",
-      "transactionHash": "0x5ca0d92984ff6204965fefb11fc7aade519b977ac9d3e4179db4fb2f0a246224"
+      "address": "0x8318ba21c44e6688338cd82861e4c0676cf9786a",
+      "transactionHash": "0x50860cef6c93c870c8591b5f8c8db16982b69949147336fcfa1b3eaa13aa43eb"
     }
   },
   "schemaVersion": "2.0.1",
-  "updatedAt": "2018-10-20T11:46:13.613Z"
+  "updatedAt": "2018-10-20T12:25:17.339Z"
 }
