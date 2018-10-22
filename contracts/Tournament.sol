@@ -50,7 +50,11 @@ contract Tournament {
         bool state
     );
 
-    event DeductClaimablePoolMoney(
+    event DeductClaimablePoolMoney (
+        uint amount
+    );
+
+    event PoolMoneyChanged (
         uint amount
     );
 
@@ -175,18 +179,8 @@ contract Tournament {
         setTournamentStatus('betting');
     }
 
-    function hasTimeLockElapsed() public {
-        if(SafeMathLib.add(bettingWindow, timeLock) < now) {
-            emit TimeLockElapsed(true);
-        }
-    }
-    
     function dateToStart() public view returns(uint256) {
-        if(SafeMathLib.add(bettingWindow, timeLock) < now) {
-            return 0;
-        } else {
-            return bettingWindow + timeLock;
-        }
+        return bettingWindow + timeLock;
     }
 
     function setParticipants(bytes10[] _participantIds)
@@ -199,7 +193,7 @@ contract Tournament {
     }
 
     function getPoolMoney () public view returns (uint) {
-        return SafeMathLib.divide(poolMoney, 1000);
+        return poolMoney;
     }
 
     function bet(bytes10 _id)
@@ -213,7 +207,7 @@ contract Tournament {
         mustHaveParticipants
     {
         bettorBetted[msg.sender][_id] = SafeMathLib.add(bettorBetted[msg.sender][_id], msg.value);
-        poolMoney = SafeMathLib.add(poolMoney, msg.value);
+        depositToPoolMoney(msg.value);
         pushToParticipantBettors(_id);
         emit Bet(_id, msg.value);
         // return msg.value;
@@ -238,6 +232,11 @@ contract Tournament {
 
     function getParticipants () public view returns(bytes10[]){
         return participantIds;
+    }
+
+    function depositToPoolMoney(uint amount) internal {
+        poolMoney = SafeMathLib.add(poolMoney, amount);
+        emit PoolMoneyChanged(poolMoney);
     }
 
     function totalBetFor(bytes10 id) public 

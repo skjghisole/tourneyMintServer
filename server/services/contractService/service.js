@@ -8,8 +8,8 @@ const factoryAddress = fs.readFileSync('server/services/contractService/factoryA
 
 const { contracts, providers } = ethers;
 const provider = 'https://ropsten.infura.io/v3/43973d2eba954fc9acc3ebfdd23e4488'
+// const provider = 'http://localhost:7545';
 const web3 = new Web3(new Web3.providers.HttpProvider(provider));
-
 
 function fixTruffleContractCompatibilityIssue(contract) {
     if (typeof contract.currentProvider.sendAsync !== "function") {
@@ -28,7 +28,6 @@ class Service {
     Contract.setProvider(web3.currentProvider);
     const fixedContract = fixTruffleContractCompatibilityIssue(Contract)
     await fixedContract.deployed();
-
     const factoryContract = fixedContract.at(factoryAddress);
     const tournamentAddresses = await factoryContract.getAllContracts();
     return tournamentAddresses;
@@ -39,9 +38,8 @@ class Service {
     Contract.setProvider(web3.currentProvider);
     const fixedContract = fixTruffleContractCompatibilityIssue(Contract)
     await fixedContract.deployed();
-
     const { address } = fixedContract.at(factoryAddress);
-    return factoryAddress;
+    return address;
   }
 
 }
