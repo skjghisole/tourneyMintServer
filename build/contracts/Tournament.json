@@ -20984,10 +20984,10 @@
     "3": {
       "events": {},
       "links": {
-        "SafeMathLib": "0xdcce4f097aa21828e14a5d3f90ec0a418a3d1cc7"
+        "SafeMathLib": "0xd8b78bc524ada726863677ef733f80e27e799291"
       },
-      "address": "0x8318ba21c44e6688338cd82861e4c0676cf9786a",
-      "transactionHash": "0x50860cef6c93c870c8591b5f8c8db16982b69949147336fcfa1b3eaa13aa43eb"
+      "address": "0xada43c7527145d2a1851659e409c3dee6cf9f6a2",
+      "transactionHash": "0xf6a8259d9b91f46a4d8dbe781137f63663168c557a37a8e9b8dad9d23d4eaff2"
     },
     "5777": {
       "events": {},
@@ -20999,5 +20999,5 @@
     }
   },
   "schemaVersion": "2.0.1",
-  "updatedAt": "2018-10-22T17:33:27.087Z"
+  "updatedAt": "2018-10-22T18:52:02.861Z"
 }
