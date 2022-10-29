@@ -44,7 +44,7 @@
     "helmet": "^3.13.0",
     "ipfs-api": "^25.0.0",
     "serve-favicon": "^2.5.0",
-    "socket.io-client": "^2.1.1",
+    "socket.io-client": "^2.5.0",
     "solc": "^0.4.25",
     "truffle-contract": "^3.0.6",
     "truffle-hdwallet-provider": "0.0.6",
